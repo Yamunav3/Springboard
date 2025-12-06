@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up - Automation Platform</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#8b5cf6',
+                        accent: '#f59e0b'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        .animate-pulse-glow {
+            animation: pulse-glow 3s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen" th:with="publishableKey=${@clerkProperties.publishableKey}">
+<header th:replace="~{fragments/nav :: app-nav}"></header>
+
+<main class="container mx-auto px-6 py-12">
+    <div class="grid lg:grid-cols-2 gap-12 items-center max-w-7xl mx-auto">
+        
+        <!-- Left Side - Sign Up Form -->
+        <section class="order-2 lg:order-1">
+            <div class="backdrop-blur-xl bg-slate-900/60 border border-slate-700/50 rounded-3xl p-8 lg:p-10 shadow-2xl shadow-violet-500/10">
+                
+                <!-- Header -->
+                <div class="mb-8">
+                    <div class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-500/10 to-pink-500/10 border border-violet-500/30 rounded-full text-sm font-semibold text-violet-400 mb-6">
+                        <i data-lucide="rocket" class="w-4 h-4"></i>
+                        <span>Join the Platform</span>
+                    </div>
+                    <h1 class="text-4xl lg:text-5xl font-bold text-white mb-3">Create your account</h1>
+                    <p class="text-slate-400 text-lg">Start automating your test suites with enterprise-grade security and collaborative tools.</p>
+                </div>
+                
+                <!-- Clerk Sign Up Widget -->
+                <div th:if="${publishableKey != null && !publishableKey.isBlank()}"
+                     id="clerk-sign-up"
+                     class="mb-6"></div>
+
+                <!-- Missing Config Message -->
+                <div th:if="${publishableKey == null || publishableKey.isBlank()}"
+                     class="p-6 bg-red-500/10 border border-red-500/30 rounded-2xl">
+                    <div class="flex items-start gap-4">
+                        <div class="w-12 h-12 bg-red-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
+                            <i data-lucide="alert-triangle" class="w-6 h-6 text-red-400"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold text-red-400 mb-2">Authentication Not Available</h2>
+                            <p class="text-red-300/80 mb-4">Configure Clerk credentials in <code class="px-2 py-1 bg-slate-800 rounded text-sm">application.properties</code> to enable sign up.</p>
+                            <div class="flex flex-wrap gap-3">
+                                <a href="/docs" class="inline-flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-blue-500 to-violet-500 hover:from-blue-600 hover:to-violet-600 text-white font-semibold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 transition-all duration-200 transform hover:scale-105">
+                                    <i data-lucide="book-open" class="w-5 h-5"></i>
+                                    <span>View Setup Guide</span>
+                                </a>
+                                <a href="/" class="inline-flex items-center gap-2 px-5 py-3 text-slate-400 hover:text-white font-semibold transition-colors">
+                                    <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                                    <span>Back to Home</span>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Footer Links -->
+                <div th:if="${publishableKey != null && !publishableKey.isBlank()}" class="mt-8 pt-6 border-t border-slate-700/50">
+                    <p class="text-center text-slate-400">
+                        Already have an account? 
+                        <a href="/signin" class="text-violet-400 hover:text-violet-300 font-semibold transition-colors">Sign in</a>
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Side - Features Showcase -->
+        <aside class="order-1 lg:order-2">
+            <div class="relative">
+                <!-- Animated background glow -->
+                <div class="absolute inset-0 bg-gradient-to-r from-violet-500/20 to-pink-500/20 blur-3xl rounded-full animate-pulse-glow"></div>
+                
+                <div class="relative backdrop-blur-xl bg-slate-900/40 border border-slate-700/50 rounded-3xl p-8 lg:p-10 shadow-2xl">
+                    <!-- Icon -->
+                    <div class="w-20 h-20 bg-gradient-to-br from-violet-500 to-pink-500 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-violet-500/50 animate-float">
+                        <i data-lucide="zap" class="w-10 h-10 text-white"></i>
+                    </div>
+                    
+                    <h2 class="text-3xl font-bold text-white mb-4">Ship Quality Fast</h2>
+                    <p class="text-slate-300 mb-8 text-lg leading-relaxed">Join thousands of teams using our platform to deliver better software, faster.</p>
+                    
+                    <!-- Features List -->
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-start gap-4 p-4 bg-slate-800/30 border border-slate-700/30 rounded-xl hover:border-violet-500/30 transition-all duration-200">
+                            <div class="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="shield-check" class="w-5 h-5 text-blue-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold mb-1">Enterprise Security</h3>
+                                <p class="text-slate-400 text-sm">SOC2-compliant with single sign-on via Clerk</p>
+                            </div>
+                        </li>
+                        
+                        <li class="flex items-start gap-4 p-4 bg-slate-800/30 border border-slate-700/30 rounded-xl hover:border-pink-500/30 transition-all duration-200">
+                            <div class="w-10 h-10 bg-pink-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="calendar-clock" class="w-5 h-5 text-pink-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold mb-1">Smart Scheduling</h3>
+                                <p class="text-slate-400 text-sm">Automate test runs with AI-powered insights</p>
+                            </div>
+                        </li>
+                        
+                        <li class="flex items-start gap-4 p-4 bg-slate-800/30 border border-slate-700/30 rounded-xl hover:border-green-500/30 transition-all duration-200">
+                            <div class="w-10 h-10 bg-green-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="share-2" class="w-5 h-5 text-green-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold mb-1">Seamless Collaboration</h3>
+                                <p class="text-slate-400 text-sm">Share reports with stakeholders instantly</p>
+                            </div>
+                        </li>
+                        
+                        <li class="flex items-start gap-4 p-4 bg-slate-800/30 border border-slate-700/30 rounded-xl hover:border-amber-500/30 transition-all duration-200">
+                            <div class="w-10 h-10 bg-amber-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i data-lucide="workflow" class="w-5 h-5 text-amber-400"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-white font-semibold mb-1">Issue Tracker Sync</h3>
+                                <p class="text-slate-400 text-sm">Connect with Jira, GitHub, and more</p>
+                            </div>
+                        </li>
+                    </ul>
+                    
+                    <!-- CTA Buttons -->
+                    <div class="flex flex-wrap gap-4">
+                        <a href="/docs" class="inline-flex items-center gap-2 px-6 py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 text-white font-semibold rounded-xl transition-all duration-200 transform hover:scale-105">
+                            <i data-lucide="book-open" class="w-5 h-5"></i>
+                            <span>Documentation</span>
+                        </a>
+                        <a href="/" class="inline-flex items-center gap-2 px-6 py-3 text-slate-400 hover:text-white font-semibold transition-colors">
+                            <i data-lucide="arrow-left" class="w-5 h-5"></i>
+                            <span>Back to Home</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+</main>
+
+<footer class="container landing-footer">
+    <small>&copy; <span th:text="${#dates.format(#dates.createNow(), 'yyyy')}">2025</span> Automation Platform. Powered by Clerk Auth</small>
+</footer>
+
+<script th:if="${publishableKey != null && !publishableKey.isBlank()}"
+        th:inline="javascript">
+    /*<![CDATA[*/
+    (function() {
+        const publishableKey = /*[[${publishableKey}]]*/ '';
+        if (!publishableKey) return;
+
+        const container = document.getElementById('clerk-sign-up');
+        const showError = (message) => {
+            if (container) {
+                container.innerHTML = `<div class="auth-error">${message}</div>`;
+            }
+        };
+
+        const loadClerk = (onReady) => {
+            const callIfReady = async () => {
+                if (!window.Clerk) return;
+                try {
+                    await window.Clerk.load();
+                    onReady(window.Clerk);
+                } catch (err) {
+                    console.error('Clerk load error:', err);
+                    showError('Authentication service unavailable. Please refresh.');
+                }
+            };
+
+            if (window.Clerk) {
+                callIfReady();
+                return;
+            }
+
+            const existingScript = document.querySelector('script[data-clerk-publishable-key]');
+            if (existingScript) {
+                existingScript.addEventListener('load', callIfReady, { once: true });
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.async = true;
+            script.crossOrigin = 'anonymous';
+            script.setAttribute('data-clerk-publishable-key', publishableKey);
+            script.src = 'https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js';
+            script.addEventListener('load', callIfReady, { once: true });
+            script.addEventListener('error', () => showError('Failed to load authentication widget.'));
+            document.head.appendChild(script);
+        };
+
+        loadClerk((clerk) => {
+            if (!container) {
+                return;
+            }
+
+            if (clerk.user) {
+                window.location.href = '/dashboard';
+                return;
+            }
+
+            clerk.mountSignUp(container, {
+                signInUrl: '/signin',
+                afterSignUpUrl: '/dashboard',
+                appearance: {
+                    elements: {
+                        rootBox: 'clerk-root-box',
+                        card: 'clerk-card-glass',
+                        formButtonPrimary: 'clerk-btn-primary',
+                        formFieldInput: 'clerk-input-dark',
+                        headerSubtitle: 'clerk-text-secondary',
+                        footer: 'clerk-text-secondary',
+                        socialButtonsBlockButtonText: 'clerk-text-primary'
+                    },
+                    variables: {
+                        colorPrimary: '#38bdf8',
+                        colorText: '#e2e8f0',
+                        colorInputText: '#e2e8f0',
+                        colorTextSecondary: '#94a3b8',
+                        colorBackground: 'rgba(15, 23, 42, 0.85)'
+                    }
+                }
+            });
+        });
+    })();
+    /*]]>*/
+</script>
+
+<style th:if="${publishableKey != null && !publishableKey.isBlank()}">
+    .clerk-card-glass {
+        background: rgba(15, 23, 42, 0.8) !important;
+        backdrop-filter: blur(20px);
+        border-radius: 16px !important;
+        border: 1px solid rgba(148, 163, 184, 0.2) !important;
+    }
+</style>
+
+<script>
+    // Initialize Lucide icons
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
+</script>
+</body>
+</html>

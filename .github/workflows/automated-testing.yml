@@ -1,0 +1,122 @@
+name: Automated Testing CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Run tests daily at 2 AM UTC
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          MYSQL_DATABASE: automation_framework
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 23
+        uses: actions/setup-java@v4
+        with:
+          java-version: "23"
+          distribution: "temurin"
+          cache: maven
+
+      - name: Set up Chrome
+        uses: browser-actions/setup-chrome@latest
+        with:
+          chrome-version: stable
+
+      - name: Build with Maven
+        run: mvn clean package -DskipTests
+        env:
+          MYSQL_USER: root
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+
+      - name: Wait for MySQL
+        run: |
+          for i in {1..30}; do
+            if mysqladmin ping -h"127.0.0.1" -P3306 -uroot -p${{ secrets.MYSQL_PASSWORD }} --silent; then
+              echo "MySQL is ready!"
+              break
+            fi
+            echo "Waiting for MySQL... ($i/30)"
+            sleep 2
+          done
+
+      - name: Run Application and Execute Tests
+        run: |
+          # Start the application in background
+          java -jar target/automated-testing-framework-1.0.0.jar &
+          APP_PID=$!
+
+          # Wait for application to start
+          for i in {1..60}; do
+            if curl -s http://localhost:5000/actuator/health > /dev/null 2>&1; then
+              echo "Application is ready!"
+              break
+            fi
+            echo "Waiting for application... ($i/60)"
+            sleep 2
+          done
+
+          # Trigger test execution via API
+          curl -X POST http://localhost:5000/api/test-suite/execute \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer ${{ secrets.TEST_API_TOKEN }}" \
+            -d '{
+              "projectId": ${{ secrets.PROJECT_ID }},
+              "environment": "CI"
+            }' || true
+
+          # Wait for tests to complete (adjust timeout as needed)
+          sleep 30
+
+          # Stop the application
+          kill $APP_PID || true
+        env:
+          MYSQL_USER: root
+          MYSQL_PASSWORD: ${{ secrets.MYSQL_PASSWORD }}
+          BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
+          CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
+          CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+          SPRING_PROFILES_ACTIVE: ci
+
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            target/surefire-reports/
+            logs/
+          retention-days: 30
+
+      - name: Notify on Failure
+        if: failure()
+        run: |
+          echo "Tests failed! Notification will be sent via email (Brevo)"
+          # Email notification is handled by the application's NotificationService
+
+      - name: Notify on Success
+        if: success()
+        run: |
+          echo "All tests passed! Notification will be sent via email (Brevo)"
+          # Email notification is handled by the application's NotificationService

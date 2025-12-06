@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Regression Monitoring - Automation Platform</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+    <script src="/js/app.js" defer></script>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/images/logo.svg">
+</head>
+<body>
+<!-- Mobile Restriction Overlay -->
+<div th:replace="~{fragments/mobile-restriction :: mobile-restriction}"></div>
+    
+<header th:replace="~{fragments/nav :: app-nav}"></header>
+
+<main class="container grid">
+    <section class="card">
+        <h2>Week-wise trends</h2>
+        <div data-trend th:attr="data-trend=${@jsonParserUtil.toJson(trend)}">
+            <canvas id="trend-chart" height="140"></canvas>
+        </div>
+    </section>
+    <section class="card">
+        <h2>Recent failures</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>Test</th>
+                <th>Status</th>
+                <th>Ended</th>
+                <th>Error</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="report : ${reports}">
+                <td th:text="${report.testCase != null ? report.testCase.name : 'Ad-hoc'}"></td>
+                <td><span class="badge" th:text="${report.status}"></span></td>
+                <td th:text="${#temporals.format(report.completedAt, 'yyyy-MM-dd HH:mm')}"></td>
+                <td th:text="${report.errorMessage}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>
