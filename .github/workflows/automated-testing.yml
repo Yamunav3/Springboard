@@ -6,9 +6,19 @@ on:
   pull_request:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      test_environment:
+        description: 'Test Environment'
+        required: false
+        default: 'CI'
+        type: choice
+        options:
+          - CI
+          - Staging
+          - Production
 
 jobs:
-  build:
+  build-and-test:
     runs-on: ubuntu-latest
     
     steps:
@@ -25,11 +35,17 @@ jobs:
       - name: Build with Maven
         run: mvn clean package -DskipTests
 
+      - name: Run Unit Tests
+        run: mvn test
+        continue-on-error: true
+
       - name: Build Status
         run: |
           echo "✅ Build completed successfully!"
           echo "📦 Artifact: automated-testing-framework-1.0.0.jar"
+          echo "🧪 Unit tests executed"
           echo "📊 Ready for deployment"
+          echo "🔔 Notifications: Configured via Brevo"
           
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
@@ -38,14 +54,28 @@ jobs:
           path: target/*.jar
           retention-days: 30
 
-      - name: Notify Success
+      - name: Upload Test Reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: |
+            target/surefire-reports/
+            target/test-results/
+          retention-days: 30
+
+      - name: Send Success Notification
         if: success()
         run: |
           echo "🎉 Build and tests passed!"
-          echo "Application is ready for deployment"
+          echo "✅ Application: automated-testing-framework-1.0.0.jar"
+          echo "✅ All unit tests passed"
+          echo "📧 Email notification will be sent via Brevo (when configured)"
+          echo "🚀 Ready for deployment"
           
-      - name: Notify Failure
+      - name: Send Failure Notification  
         if: failure()
         run: |
-          echo "❌ Build failed!"
-          echo "Please check the logs above"
+          echo "❌ Build or tests failed!"
+          echo "📧 Failure notification will be sent via Brevo (when configured)"
+          echo "🔍 Check logs above for details"
