@@ -598,6 +598,7 @@ Made with ❤️ by **Infosys Springboard Batch 1 Interns**
 
 <div align="center">
 
-**© 2024 Infosys Springboard | Built with passion and precision**
+**© 2025 Infosys Springboard | Built with passion and precision**
 
 </div>
+
